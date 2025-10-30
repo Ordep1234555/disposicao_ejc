@@ -64,4 +64,4 @@ jobs:
       # 1. Faz o deploy no GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deployment-pages@v4
+        uses: actions/deploy-pages@v4
