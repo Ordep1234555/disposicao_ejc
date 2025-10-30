@@ -1,7 +1,8 @@
 {
   "name": "disposicao-ejc",
+  "homepage": "https://ordep1234555.github.io/disposicao-ejc",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,0 +1,67 @@
+# Nome do seu workflow
+name: Deploy React App to GitHub Pages
+
+# Quando este workflow deve rodar?
+# Roda em todo push para a branch 'main'
+on:
+  push:
+    branches: [ "main" ] # Mude para 'master' se for o seu caso
+  pull_request:
+    branches: [ "main" ] # Mude para 'master' se for o seu caso
+
+  # Permite rodar manualmente pela aba Actions no GitHub
+  workflow_dispatch:
+
+# Permissões necessárias para o Actions modificar o deploy
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Tarefas que serão executadas
+jobs:
+  # Tarefa de "build" (compilar o app)
+  build:
+    runs-on: ubuntu-latest # Rodar em um servidor Linux
+
+    steps:
+      # 1. Baixa o seu código do repositório
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Configura o Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use a versão do Node que você usa
+          cache: 'npm' # Habilita cache para 'npm install'
+
+      # 3. Instala as dependências
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Roda o build (gera a pasta 'dist' ou 'build')
+      # Mude 'npm run build' se o seu script for diferente
+      - name: Build
+        run: npm run build
+
+      # 5. Salva os arquivos compilados para a próxima tarefa
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  # Tarefa de "deploy" (publicar o app)
+  deploy:
+    # Só roda depois que a tarefa 'build' terminar com sucesso
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      # 1. Faz o deploy no GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deployment-pages@v4
